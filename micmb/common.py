@@ -5,6 +5,7 @@ import csv
 import io
 import json
 import datetime
+import hashlib
 
 def makedirs(path):
     if not os.path.isdir(path):
@@ -52,3 +53,8 @@ def write_json(fn,j):
     with open(fn, 'w') as fout:
         json.dump(j, fp=fout, indent=2, sort_keys=True)
         fout.write('\n')
+
+def md5(txt):
+    md5 = hashlib.new('md5')
+    md5.update(txt.encode('utf8'))
+    return md5.hexdigest()

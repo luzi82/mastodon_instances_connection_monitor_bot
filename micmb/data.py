@@ -3,25 +3,100 @@ import os
 
 class Data:
 
-    def __init__(self, config):
+    def __init__(self, config, timestamp):
         self.config = config
+        self.timestamp = timestamp
         self.fn = os.path.join('data','data.json')
         if os.path.exists(self.fn):
             self.j = common.read_json(self.fn)
         else:
             self.j = {}
 
-    def set_refreshtime(self,domain,timestamp):
+    def add_domain_try_write_time(self,domain,timestamp):
         if 'domain_data_dict' not in self.j:
             self.j['domain_data_dict'] = {}
         if domain not in self.j['domain_data_dict']:
             self.j['domain_data_dict'][domain] = {}
-        self.j['domain_data_dict'][domain]['refreshtime'] = timestamp
+        if 'try_write_time_list' not in self.j['domain_data_dict'][domain]:
+            self.j['domain_data_dict'][domain]['try_write_time_list'] = []
+        self.j['domain_data_dict'][domain]['try_write_time_list'].append(timestamp)
+        timeout = self.timestamp - self.config['timeout']
+        self.j['domain_data_dict'][domain]['try_write_time_list'] = list(filter(
+                lambda i:i>=timeout,
+                self.j['domain_data_dict'][domain]['try_write_time_list']
+        ))
         self._save()
 
-    def get_refreshtime(self,domain):
+    def get_min_domain_try_write_time(self,domain):
         try:
-            return self.j['domain_data_dict'][domain]['refreshtime']
+            timeout = self.timestamp - self.config['timeout']
+            return min(filter(
+                lambda i:i>=timeout,
+                self.j['domain_data_dict'][domain]['try_write_time_list']
+            ))
+        except:
+            return 0
+
+    def get_max_domain_try_write_time(self,domain):
+        try:
+            timeout = self.timestamp - self.config['timeout']
+            return max(filter(
+                lambda i:i>=timeout,
+                self.j['domain_data_dict'][domain]['try_write_time_list']
+            ))
+        except:
+            return 0
+
+    def add_domain_success_write_time(self,domain,timestamp):
+        if 'domain_data_dict' not in self.j:
+            self.j['domain_data_dict'] = {}
+        if domain not in self.j['domain_data_dict']:
+            self.j['domain_data_dict'][domain] = {}
+        if 'success_write_time_list' not in self.j['domain_data_dict'][domain]:
+            self.j['domain_data_dict'][domain]['success_write_time_list'] = []
+        self.j['domain_data_dict'][domain]['success_write_time_list'].append(timestamp)
+        timeout = self.timestamp - self.config['timeout']
+        self.j['domain_data_dict'][domain]['success_write_time_list'] = list(filter(
+                lambda i:i>=timeout,
+                self.j['domain_data_dict'][domain]['success_write_time_list']
+        ))
+        self._save()
+
+    def get_min_domain_success_write_time(self,domain):
+        try:
+            timeout = self.timestamp - self.config['timeout']
+            return min(filter(
+                lambda i:i>=timeout,
+                self.j['domain_data_dict'][domain]['success_write_time_list']
+            ))
+        except:
+            return 0
+
+    def set_domain_try_read_time(self,domain,timestamp):
+        if 'domain_data_dict' not in self.j:
+            self.j['domain_data_dict'] = {}
+        if domain not in self.j['domain_data_dict']:
+            self.j['domain_data_dict'][domain] = {}
+        self.j['domain_data_dict'][domain]['try_read_time'] = timestamp
+        self._save()
+
+    def get_domain_try_read_time(self,domain):
+        try:
+            return self.j['domain_data_dict'][domain]['try_read_time']
+        except:
+            return 0
+
+    def set_domain_success_read_time(self,domain,timestamp):
+        if 'domain_data_dict' not in self.j:
+            self.j['domain_data_dict'] = {}
+        if domain not in self.j['domain_data_dict']:
+            self.j['domain_data_dict'][domain] = {}
+        self.j['domain_data_dict'][domain]['success_read_time'] = timestamp
+        self._save()
+
+    def get_domain_success_read_time(self,domain):
+        try:
+            return self.j['domain_data_dict'][domain]['success_read_time']
         except:
             return 0
 
@@ -53,23 +128,53 @@ class Data:
         except:
             return None
 
-    def set_seen_data(self, read_domain, write_domain, read_timestamp, write_timestamp):
-        if 'seen_data_dict' not in self.j:
-            self.j['seen_data_dict'] = {}
-        key = '{1}>{0}'.format(read_domain, write_domain)
-        print(key)
-        self.j['seen_data_dict'][key] = {
-            'read_timestamp': read_timestamp,
-            'write_timestamp': write_timestamp
-        }
+    def set_domain2_follow_time(self,write_domain,read_domain,timestamp):
+        key = '{0}>{1}'.format(write_domain,read_domain)
+        if 'domain2_data_dict' not in self.j:
+            self.j['domain2_data_dict'] = {}
+        if key not in self.j['domain2_data_dict']:
+            self.j['domain2_data_dict'][key] = {}
+        self.j['domain2_data_dict'][key]['follow_time'] = timestamp
         self._save()
 
-    def get_seen_data(self, read_domain, write_domain):
-        key = '{0},{1}'.format(read_domain, write_domain)
+    def get_domain2_follow_time(self,write_domain,read_domain):
         try:
-            return self.j['seen_data_dict'][key]
+            key = '{0}>{1}'.format(write_domain,read_domain)
+            return self.j['domain2_data_dict'][key]['follow_time']
         except:
             return None
+
+    def set_domain2_msg_time(self,write_domain,read_domain,timestamp):
+        key = '{0}>{1}'.format(write_domain,read_domain)
+        if 'domain2_data_dict' not in self.j:
+            self.j['domain2_data_dict'] = {}
+        if key not in self.j['domain2_data_dict']:
+            self.j['domain2_data_dict'][key] = {}
+        self.j['domain2_data_dict'][key]['msg_time'] = timestamp
+        self._save()
+
+    def get_domain2_msg_time(self,write_domain,read_domain):
+        try:
+            key = '{0}>{1}'.format(write_domain,read_domain)
+            return self.j['domain2_data_dict'][key]['msg_time']
+        except:
+            return 0
+
+    def set_domain2_state(self,write_domain,read_domain,timestamp):
+        key = '{0}>{1}'.format(write_domain,read_domain)
+        if 'domain2_data_dict' not in self.j:
+            self.j['domain2_data_dict'] = {}
+        if key not in self.j['domain2_data_dict']:
+            self.j['domain2_data_dict'][key] = {}
+        self.j['domain2_data_dict'][key]['state'] = timestamp
+        self._save()
+
+    def get_domain2_state(self,write_domain,read_domain):
+        try:
+            key = '{0}>{1}'.format(write_domain,read_domain)
+            return self.j['domain2_data_dict'][key]['state']
+        except:
+            return 'unknown'
 
     def set_lastrun(self, timestamp):
         self.j['lastrun'] = timestamp
