@@ -220,7 +220,7 @@ for refreshtime_domain_tuple in refreshtime_domain_tuple_list:
         for status in status_list:
             content = status['content']
             try:
-                _content = BeautifulSoup(content,'html5lib').text
+                _content = BeautifulSoup(content,'html.parser').text
                 print(_content)
                 j = json.loads(_content)
                 if not verify(j):
@@ -305,6 +305,7 @@ for write_domain in domain_list:
                 'unknown' if data.get_domain_try_read_time(read_domain) < timestamp - config['timeout'] else \
                 'unknown' if data.get_min_domain_try_write_time(write_domain) < timestamp - config['timeout'] else \
                 'unknown' if data.get_min_domain_try_write_time(write_domain) >= timestamp - config['min_deliver_time'] else \
+                'unknown' if data.get_domain2_follow_time(write_domain,read_domain) >= timestamp - config['min_deliver_time'] else \
                 'bad'
         state_data_dict[key] = state
 
