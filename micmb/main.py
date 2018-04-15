@@ -28,6 +28,9 @@ domain_list = [i['domain'] for i in config['instance_data_list']]
 
 test_domain_username_dict={ i['domain']:i['username'] for i in config['instance_data_list'] }
 
+heartbeat_hm = dateutil.parser.parse(config['heartbeat'])
+heartbeat = ( now_dt.hour == heartbeat_hm ) and ( now_dt.minute == heartbeat_hm.minute )
+
 def sign(j):
     if 'sign' in j:
         del j['sign']
@@ -356,8 +359,7 @@ for write_domain in domain_list:
 
 msg_list = []
 
-heartbeat_hm = dateutil.parser.parse(config['heartbeat'])
-if ( now_dt.hour == heartbeat_hm ) and ( now_dt.minute == heartbeat_hm.minute ):
+if heartbeat:
     msg_list.append('HEARTBEAT')
 
 for write_domain in domain_list:
@@ -399,3 +401,37 @@ for report_acc in config['report_acc_list']:
         except:
             print('LMXGHQXI {0} {1} {2}'.format(domain,username,msg))
             traceback.print_exc()
+
+if heartbeat:
+
+    for instance_data in config['instance_data_list']:
+        domain = instance_data['domain']
+        username = instance_data['username']
+        bot_client_secret_fn = os.path.join('data','instances',domain,'bot_client.secret')
+        user_secret_file = os.path.join('data','accounts',common.md5('{0},{1}'.format(domain,username)),'user.secret')
+        api_base_url = 'https://{0}'.format(domain)
+        mastodon = Mastodon(
+            client_id = bot_client_secret_fn,
+            access_token = user_secret_file,
+            api_base_url = api_base_url
+        )
+        mastodon.account_update_credentials(
+            display_name=config['detection_acc_display_name'],
+            note=config['detection_acc_description']
+        )
+
+    for instance_data in config['report_acc_list']:
+        domain = instance_data['domain']
+        username = instance_data['username']
+        bot_client_secret_fn = os.path.join('data','instances',domain,'bot_client.secret')
+        user_secret_file = os.path.join('data','accounts',common.md5('{0},{1}'.format(domain,username)),'user.secret')
+        api_base_url = 'https://{0}'.format(domain)
+        mastodon = Mastodon(
+            client_id = bot_client_secret_fn,
+            access_token = user_secret_file,
+            api_base_url = api_base_url
+        )
+        mastodon.account_update_credentials(
+            display_name=config['announcement_acc_display_name'],
+            note=config['announcement_acc_description']
+        )
