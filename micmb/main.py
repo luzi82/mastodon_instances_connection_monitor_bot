@@ -177,7 +177,7 @@ for refreshtime_domain_tuple in refreshtime_domain_tuple_list:
         
         for acct in add_follower_list:
             try:
-                print('QXXETPXT @{0} follow {1}'.format(data.get_username(domain), acct))
+                print('QXXETPXT {0} follow {1}'.format(data.get_username(domain), acct))
                 mastodon.follows(acct[1:])
                 domain_write = acct[acct.find('@',1)+1:]
                 data.set_domain2_follow_time(domain_write, domain, timestamp)
