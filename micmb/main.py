@@ -161,8 +161,8 @@ for refreshtime_domain_tuple in refreshtime_domain_tuple_list:
         follower_list = [i['acct'] for i in follower_list]
         follower_list = ['@{0}'.format(i) if '@' in i else '@{0}@{1}'.format(i,domain) for i in follower_list]
         all_follower_list = config['instance_data_list']
-        all_follower_list = [i['domain'] for i in add_follower_list]
-        all_follower_list = [data.get_username(i) for i in add_follower_list]
+        all_follower_list = [i['domain'] for i in all_follower_list]
+        all_follower_list = [data.get_username(i) for i in all_follower_list]
         add_follower_list = set(all_follower_list) - set(follower_list)
         add_follower_list.remove(data.get_username(domain))
         
