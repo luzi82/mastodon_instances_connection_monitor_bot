@@ -1,0 +1,3 @@
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+
+* * * * * luzi82 flock -w 1 /home/luzi82/mastodon_instances_connection_monitor_bot/lock -c "cd /home/luzi82/mastodon_instances_connection_monitor_bot && python3 -m micmb.main" >> /home/luzi82/log/micmb.txt 2>&1
