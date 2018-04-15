@@ -170,11 +170,12 @@ for refreshtime_domain_tuple in refreshtime_domain_tuple_list:
             domain_write = acct[acct.find('@',1)+1:]
             if data.get_domain2_follow_time(domain_write, domain) is not None:
                 continue
+            print('CDYEVXKP detect @{0} followed {1}'.format(data.get_username(domain), acct))
             data.set_domain2_follow_time(domain_write, domain, timestamp)
         
         for acct in add_follower_list:
             try:
-                print('{0} follow {1}'.format(domain, acct))
+                print('QXXETPXT @{0} follow {1}'.format(data.get_username(domain), acct))
                 mastodon.follows(acct[1:])
                 domain_write = acct[acct.find('@',1)+1:]
                 data.set_domain2_follow_time(domain_write, domain, timestamp)
