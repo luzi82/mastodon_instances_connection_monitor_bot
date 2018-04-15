@@ -305,7 +305,7 @@ for write_domain in domain_list:
                 'unknown' if data.get_domain_try_read_time(read_domain) < timestamp - config['timeout'] else \
                 'unknown' if data.get_min_domain_try_write_time(write_domain) < timestamp - config['timeout'] else \
                 'unknown' if data.get_min_domain_try_write_time(write_domain) >= timestamp - config['min_deliver_time'] else \
-                'unknown' if data.get_domain2_follow_time(write_domain,read_domain) >= timestamp - config['min_deliver_time'] else \
+                'unknown' if data.get_domain_try_read_time(read_domain) - data.get_domain2_follow_time(write_domain,read_domain) < config['min_deliver_time'] else \
                 'bad'
         state_data_dict[key] = state
 
