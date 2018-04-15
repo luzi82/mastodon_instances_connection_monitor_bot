@@ -317,7 +317,7 @@ for refreshtime_domain_tuple in refreshtime_domain_tuple_list:
         max_id = None
         while(True):
             _status_list = mastodon.account_statuses(id=user_id, max_id=max_id)
-            print('TSKYQWIY len(_status_list)={0}'.format(len(_status_list)))
+            # print('TSKYQWIY len(_status_list)={0}'.format(len(_status_list)))
             if len(_status_list) <= 0:
                 break
             status_list += _status_list
@@ -325,11 +325,11 @@ for refreshtime_domain_tuple in refreshtime_domain_tuple_list:
                 break
             max_id = _status_list[-1]['_pagination_next']['max_id']
         
-        print('MLKDQIUA len(status_list)={0}'.format(len(status_list)))
+        # print('MLKDQIUA len(status_list)={0}'.format(len(status_list)))
         status_list = filter(lambda i:i['created_at'].timestamp() < timestamp-config['remove_toot_timeout'] ,status_list)
         status_list = list(status_list)
         for status in status_list:
-            print('PVHSPADZ delete {0}'.format(status['id']))
+            # print('PVHSPADZ delete {0}'.format(status['id']))
             mastodon.status_delete(status['id'])
     
     except:
