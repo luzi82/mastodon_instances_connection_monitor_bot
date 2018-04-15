@@ -295,6 +295,47 @@ for refreshtime_domain_tuple in refreshtime_domain_tuple_list:
         print('LAZQAARK {0}'.format(refreshtime_domain_tuple[1]))
         traceback.print_exc()
 
+# remove toot
+
+for refreshtime_domain_tuple in refreshtime_domain_tuple_list:
+    try:
+        domain = refreshtime_domain_tuple[1]
+        username = test_domain_username_dict[domain]
+        bot_client_secret_fn = os.path.join('data','instances',domain,'bot_client.secret')
+        user_secret_file = os.path.join('data','accounts',common.md5('{0},{1}'.format(domain,username)),'user.secret')
+        api_base_url = 'https://{0}'.format(domain)
+
+        mastodon = Mastodon(
+            client_id = bot_client_secret_fn,
+            access_token = user_secret_file,
+            api_base_url = api_base_url
+        )
+
+        user_id = data.get_id(domain)
+        
+        status_list = []
+        max_id = None
+        while(True):
+            _status_list = mastodon.account_statuses(id=user_id, max_id=max_id)
+            print('TSKYQWIY len(_status_list)={0}'.format(len(_status_list)))
+            if len(_status_list) <= 0:
+                break
+            status_list += _status_list
+            if '_pagination_next' not in _status_list[-1]:
+                break
+            max_id = _status_list[-1]['_pagination_next']['max_id']
+        
+        print('MLKDQIUA len(status_list)={0}'.format(len(status_list)))
+        status_list = filter(lambda i:i['created_at'].timestamp() < timestamp-config['remove_toot_timeout'] ,status_list)
+        status_list = list(status_list)
+        for status in status_list:
+            print('PVHSPADZ delete {0}'.format(status['id']))
+            mastodon.status_delete(status['id'])
+    
+    except:
+        print('MMEEJTPU {0}'.format(refreshtime_domain_tuple[1]))
+        traceback.print_exc()
+
 # report
 
 state_data_dict = {}
