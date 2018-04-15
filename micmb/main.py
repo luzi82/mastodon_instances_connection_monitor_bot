@@ -119,7 +119,7 @@ for instance_data in config['instance_data_list']:
 
 refresh_instance_count_max = (len(config['instance_data_list'])+1)*60/config['refresh_min_period']
 refresh_instance_count_max = math.ceil(refresh_instance_count_max)
-print('refresh_instance_count_max={0}'.format(refresh_instance_count_max))
+#print('refresh_instance_count_max={0}'.format(refresh_instance_count_max))
 
 refreshtime_domain_tuple_list = []
 for instance_data in config['instance_data_list']:
@@ -224,7 +224,7 @@ for refreshtime_domain_tuple in refreshtime_domain_tuple_list:
             content = status['content']
             try:
                 _content = BeautifulSoup(content,'html.parser').text
-                print(_content)
+                # print(_content)
                 j = json.loads(_content)
                 if not verify(j):
                     continue
@@ -288,7 +288,7 @@ for refreshtime_domain_tuple in refreshtime_domain_tuple_list:
         sign(j)
         content = json.dumps(j, sort_keys=True)
         mastodon.status_post(content, visibility='unlisted')
-        print('{0} {1}'.format(domain,content))
+        # print('{0} {1}'.format(domain,content))
 
         data.add_domain_success_write_time(domain,timestamp)
     except:
