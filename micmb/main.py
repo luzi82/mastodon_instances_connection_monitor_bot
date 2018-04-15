@@ -85,7 +85,7 @@ for instance_data in config['instance_data_list'] + config['report_acc_list']:
         api_base_url = api_base_url
     )
     mastodon.log_in(
-        username,
+        username.lower(),
         password,
         to_file = user_secret_file
     )
