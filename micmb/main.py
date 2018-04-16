@@ -28,9 +28,6 @@ domain_list = [i['domain'] for i in config['instance_data_list']]
 
 test_domain_username_dict={ i['domain']:i['username'] for i in config['instance_data_list'] }
 
-heartbeat_hm = dateutil.parser.parse(config['heartbeat'])
-heartbeat = ( now_dt.hour == heartbeat_hm ) and ( now_dt.minute == heartbeat_hm.minute )
-
 def sign(j):
     if 'sign' in j:
         del j['sign']
@@ -357,6 +354,9 @@ for write_domain in domain_list:
                 'bad'
         state_data_dict[key] = state
 
+next_heartbeat = data.get_next_heartbeat()
+heartbeat = now_dt >= next_heartbeat
+
 msg_list = []
 
 if heartbeat:
@@ -435,3 +435,11 @@ if heartbeat:
             display_name=config['announcement_acc_display_name'],
             note=config['announcement_acc_description']
         )
+
+if heartbeat:
+    heartbeat_hm = dateutil.parser.parse(config['heartbeat']).time()
+    now_dt_date = now_dt.date()
+    next_heartbeat = datetime.datetime.combine(now_dt_date, heartbeat_hm)
+    while next_heartbeat <= now_dt:
+        next_heartbeat = next_heartbeat + datetime.timedelta(days=1)
+    data.set_next_heartbeat(next_heartbeat)

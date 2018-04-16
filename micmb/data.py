@@ -1,5 +1,7 @@
 from . import common
 import os
+import dateutil.parser
+import datetime
 
 class Data:
 
@@ -185,6 +187,16 @@ class Data:
             return self.j['lastrun']
         except:
             return 0
+
+    def set_next_heartbeat(self, t):
+        self.j['next_heartbeat'] = str(t)
+        self._save()
+    
+    def get_next_heartbeat(self):
+        try:
+            return dateutil.parser.parse(self.j['next_heartbeat'])
+        except:
+            return datetime.datetime.fromtimestamp(0)
     
     def _save(self):
         common.write_json(self.fn, self.j)
